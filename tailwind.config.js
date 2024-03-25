@@ -5,7 +5,15 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        inter: ["Inter Bold"],
+      },
+
+      colors: {
+        orange: '#FF914D',
+      },
+    },
   },
   plugins: [require("daisyui")],
 }
