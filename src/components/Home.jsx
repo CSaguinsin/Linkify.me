@@ -8,7 +8,8 @@ const Home = () => {
             Where Every <span className="text-[#FF914D]">Link</span> Leads <br /> to <span className="text-[#FF914D]">Possibility</span>
             </h1>
             <div className="flex justify-center pt-5 space-x-3">
-                <input type="text" placeholder="Linkify.me/" className="input input-bordered input-accent w-full max-w-xs" />
+            <label className="input input-bordered flex items-center gap-2">Linkify.me/<input type="text" className="grow" placeholder="name.linkify" />
+</label>
                 <button className="btn btn-warning font-bold rounded-lg text-white">Claim your Linkify</button>
             </div>
 
