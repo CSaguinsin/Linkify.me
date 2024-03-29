@@ -1,7 +1,29 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../assets/logo.png'
+import {  signInWithEmailAndPassword, signInWithPopup   } from 'firebase/auth';
+import { auth, googleProvider } from '../config/firebase';
+
 const LogIn = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const onLogin = (e) => {
+    e.preventDefault();
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        navigate("/dashboard")
+        console.log(user);
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage)
+    });
+}
   return (
     <>  
 <div className="bg-gray-50 font-[sans-serif] text-[#333]">
@@ -20,9 +42,13 @@ const LogIn = () => {
       <form className="mt-10 space-y-4">
         <div>
           <input
-            name="email"
-            type="email"
-            autoComplete="email"
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+
             required=""
             className="w-full text-sm px-4 py-3 rounded outline-none border-2 focus:border-blue-500"
             placeholder="Email address"
@@ -30,8 +56,9 @@ const LogIn = () => {
         </div>
         <div>
           <input
-            name="password"
-            type="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
             required=""
             className="w-full text-sm px-4 py-3 rounded outline-none border-2 focus:border-blue-500"
@@ -61,6 +88,7 @@ const LogIn = () => {
         </div>
         <div className="!mt-10">
           <button
+          onClick={onLogin}
             type="button"
             className="w-full py-2.5 px-4 text-sm rounded text-white bg-[#FF914D] hover:bg-[#FF914D] focus:outline-none"
           >

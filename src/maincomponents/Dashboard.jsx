@@ -4,7 +4,7 @@ const Dashboard = () => {
   return (
     <>  
 <section>
-
+    <h1>ito dashboard</h1>
 </section>
     </>
   )

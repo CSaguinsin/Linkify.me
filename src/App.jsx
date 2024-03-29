@@ -7,6 +7,7 @@ import Home from '../src/components/Home'
 import Navbar from './components/Navbar'
 import LogIn from './components/LogIn'
 import SignUp from './components/SignUp';
+import Footer from './components/Footer';
 
 
 // Main Components
@@ -23,6 +24,7 @@ function App() {
             {/* Routes after Auth */}
             <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
+        <Footer />
     </>
   )
 }

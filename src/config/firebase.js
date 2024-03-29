@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import {getAuth, GoogleAuthProvider} from "firebase/auth";
-import {getFirestore} from 'firebase/firestore';
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -14,9 +14,17 @@ const firebaseConfig = {
   measurementId: "G-LLW36SQQY7"
 };
 
+let app;
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+export const initializeFirebase = () => {
+  if (!app) {
+    app = initializeApp(firebaseConfig);
+    getAnalytics(app);
+  }
+};
+
+initializeFirebase();
+
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
