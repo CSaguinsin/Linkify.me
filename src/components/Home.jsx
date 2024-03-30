@@ -2,9 +2,12 @@ import React from 'react'
 import Sample from '../assets/carlsaginsin.png';
 import { Link } from 'react-router-dom';
 import Screenshot from '../assets/Screenshot .png';
+import Navbar from './Navbar';
+import Footer from './Footer';
 const Home = () => {
   return (
         <>
+        <Navbar />
             <div className="flex justify-center space-x-3 pt-10">   
               <div className="avatar-group -space-x-6 rtl:space-x-reverse">
                 <div className="avatar">
@@ -39,12 +42,11 @@ const Home = () => {
             Where Every <span className="text-[#FF914D]">Link</span> Leads <br /> to <span className="text-[#FF914D]">Possibility</span>
             </h1>
             <div className="flex justify-center pt-5 space-x-3">
-            <label className="input input-bordered flex items-center gap-2">Linkify.me/<input type="text" className="grow" placeholder="yourname" /></label>
+            <label className="input input-bordered flex  items-center gap-2">Linkify.me/<input type="text" className="grow" placeholder="yourname" /></label>
             <Link to="/login" >
                 <button className="btn btn-warning font-bold rounded-lg text-white">Claim your Linkify</button>
             </Link>
             </div>
-            <p className='flex justify-center font-semibold pt-5'>It’s free, and takes less than a minute</p>
 
             <div className='flex pt-5 items-center justify-center pb-10 '>
               <img src={Sample} alt="sample" className="w-[70rem] rounded-lg shadow-lg" />
@@ -91,7 +93,7 @@ const Home = () => {
 </div>
 
 
-
+<Footer />
         </>
   )
 }

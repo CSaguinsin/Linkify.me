@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../assets/logo.png'
 import {  signInWithEmailAndPassword, signInWithPopup   } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
-
+import Navbar from './Navbar';
+import Footer from './Footer';
 const LogIn = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -26,6 +27,7 @@ const LogIn = () => {
 }
   return (
     <>  
+<Navbar />
 <div className="bg-gray-50 font-[sans-serif] text-[#333]">
   <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
     <div className="max-w-md w-full border py-8 px-6 rounded border-gray-300 bg-white">
@@ -99,7 +101,7 @@ const LogIn = () => {
     </div>
   </div>
 </div>
-
+<Footer />
     </>
   )
 }

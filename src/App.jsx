@@ -15,7 +15,7 @@ import Dashboard from './maincomponents/Dashboard';
 function App() {
   return (
     <>
-        <Navbar /> 
+        {/* <Navbar />  */}
         <Routes>
            <Route path="/" element={<Home />} />  
             <Route path="/login" element={<LogIn />} />
@@ -24,7 +24,7 @@ function App() {
             {/* Routes after Auth */}
             <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
-        <Footer />
+        {/* <Footer /> */}
     </>
   )
 }

@@ -5,7 +5,8 @@ import { auth } from '../config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Logo from '../assets/logo.png'
 import Dashboard from '../maincomponents/Dashboard';
-
+import Navbar from './Navbar';
+import Footer from './Footer';
 const SignUp = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -59,6 +60,7 @@ const SignUp = () => {
 
   return (
     <>
+    <Navbar />
       <div className="bg-gray-50 font-[sans-serif] text-[#333]">
         <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
           <div className="max-w-md w-full border py-8 px-6 rounded border-gray-300 bg-white">
@@ -132,6 +134,7 @@ const SignUp = () => {
           </div>
         </div>
       </div>
+      <Footer /> 
     </>
   )
 }
