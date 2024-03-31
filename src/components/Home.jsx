@@ -36,7 +36,7 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              <p className="flex items-center font-medium">150+ People are using Linkify</p>
+              <p className="flex items-center font-['Inter Bold'] font-semibold">150+ People are using Linkify</p>
             </div>
             <h1 className='text-center  font-bold text-[80px]'>
             Where Every <span className="text-[#FF914D]">Link</span> Leads <br /> to <span className="text-[#FF914D]">Possibility</span>

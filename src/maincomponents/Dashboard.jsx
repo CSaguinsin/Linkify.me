@@ -1,7 +1,33 @@
-import React from 'react'
+import React, { useState } from 'react';
 import Me from '../assets/AboutMe.jpg';
 import Example from '../assets/example.jpg'
+import { signOut } from 'firebase/auth'; // Updated import
+import { auth } from '../config/firebase';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = () => {
+    setLoggingOut(true); // Set the state to indicate logging out
+
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        setTimeout(() => {
+          setLoggingOut(false); // Set the state to indicate logout is done
+          navigate("/");
+        }, 2000); // Simulating a 2-second delay for demonstration (you can remove this in your actual implementation)
+      })
+      .catch((error) => {
+        // Handle logout error
+        setLoggingOut(false); // Set the state to indicate logout is done
+        // Handle error accordingly
+      });
+  };
+
   return (
     <>  
   <section>
@@ -63,8 +89,32 @@ const Dashboard = () => {
       <div className="absolute top-[65rem] left-10 pl-16 z-20">
           <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About"></textarea>
       </div>
-      <div className="absolute top-[77rem] pb-10 left-10 pl-16 z-20">
-         <button className=" btn btn-warning font-bold rounded-lg text-white">Claim your Linkify</button>
+      <div className="absolute top-[77rem] space-x-5 pb-10 left-10 pl-16 z-20">
+         <button className=" btn btn-warning font-bold rounded-lg text-white">Save</button>
+         <button
+            type="button"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-100 focus:ring focus:ring-gray-100 disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-400"
+            onClick={handleLogout} // Add this line to attach handleLogout function to the onClick event
+          >
+            Log out
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-4 w-4"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z"
+                clipRule="evenodd"
+              />
+              <path
+                fillRule="evenodd"
+                d="M6 10a.75.75 0 01.75-.75h9.546l-1.048-.943a.75.75 0 111.004-1.114l2.5 2.25a.75.75 0 010 1.114l-2.5 2.25a.75.75 0 11-1.004-1.114l1.048-.943H6.75A.75.75 0 016 10z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
       </div>
   </section>
 
