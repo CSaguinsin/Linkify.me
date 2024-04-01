@@ -1,58 +1,131 @@
-import React, { useState } from 'react';
-import Me from '../assets/AboutMe.jpg';
-import Example from '../assets/example.jpg'
-import { signOut } from 'firebase/auth'; // Updated import
-import { auth } from '../config/firebase';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { auth, storage, db } from '../config/firebase';
+import AvatarImage from '../assets/avatarImg.png'; // Default avatar image
+import Example from '../assets/example.jpg';
+import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarURL, setAvatarURL] = useState(null);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  const fetchAvatarURL = async () => {
+    if (!auth.currentUser) {
+      console.error("User is not authenticated.");
+      return;
+    }
+  
+    const q = query(collection(db, 'avatars'), where('userId', '==', auth.currentUser.uid));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      querySnapshot.forEach((doc) => {
+        const avatarURL = doc.data().avatarURL;
+        console.log("Avatar URL:", avatarURL); // Log the avatar URL
+        setAvatarURL(avatarURL);
+  
+        // Update the user's photoURL
+        auth.currentUser.updateProfile({
+          photoURL: avatarURL
+        }).then(() => {
+          console.log('Photo URL updated successfully');
+        }).catch((error) => {
+          console.error('Error updating photo URL:', error);
+        });
+      });
+    }
+  };
+  
+  
+
+  useEffect(() => {
+    fetchAvatarURL();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        fetchAvatarURL(); // Fetch avatar URL when user logs in
+      }
+    });
+    
+    return unsubscribe;
+  }, []);
+
   const handleLogout = () => {
-    setLoggingOut(true); // Set the state to indicate logging out
+    setLoggingOut(true);
 
     signOut(auth)
       .then(() => {
-        // Sign-out successful.
         setTimeout(() => {
-          setLoggingOut(false); // Set the state to indicate logout is done
+          setLoggingOut(false);
           navigate("/");
-        }, 2000); // Simulating a 2-second delay for demonstration (you can remove this in your actual implementation)
+        }, 2000);
       })
       .catch((error) => {
-        // Handle logout error
-        setLoggingOut(false); // Set the state to indicate logout is done
-        // Handle error accordingly
+        setLoggingOut(false);
       });
   };
 
+  const handleFileChange = (e) => {
+    setAvatarFile(e.target.files[0]);
+    setAvatarURL(URL.createObjectURL(e.target.files[0])); // Display selected image immediately
+  };
+
+  const handleSave = async () => {
+    try {
+      if (!auth.currentUser || !avatarFile) {
+        console.error("User is not authenticated or no file selected.");
+        return;
+      }
+  
+      const storageRef = ref(storage, `avatars/${auth.currentUser.uid}/${avatarFile.name}`);
+      await uploadBytes(storageRef, avatarFile);
+      const downloadURL = await getDownloadURL(storageRef);
+  
+      await addDoc(collection(db, 'avatars'), {
+        userId: auth.currentUser.uid,
+        avatarURL: downloadURL
+      });
+  
+      console.log("Image saved successfully!");
+    } catch (error) {
+      console.error("Error saving image:", error);
+    }
+  };
+  
+  
   return (
-    <>  
-  <section>
-      <div className="relative">
-          <div className="grid grid-cols-3 min-h-[16rem] py-6 px-16 font-[sans-serif] overflow-hidden" style={{ backgroundImage: `url(${Example})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-          </div>
+    <>
+      <section>
+        <div className="relative">
+          <div className="grid grid-cols-3 min-h-[16rem] py-6 px-16 font-[sans-serif] overflow-hidden" style={{ backgroundImage: `url(${Example})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
           <div className="absolute top-[8rem] left-0 avatar pl-16 z-20">
             <div className="w-[16rem] rounded-full">
-              <img src={Me} />
+              <img src={avatarURL || AvatarImage} alt="Avatar" />
             </div>
           </div>
-      </div>
-  </section>
+          <div className="absolute top-[25rem] left-10 avatar pl-16 z-20">
+            <input type="file" className="file-input file-input-bordered file-input-xs w-full max-w-xs" onChange={handleFileChange} />
+          </div>
+        </div>
+      </section>
+
 
 <section>
-  <div className="absolute top-[25rem]  left-10  pl-16 z-20">
+  <div className="absolute top-[30rem]  left-10  pl-16 z-20">
       <h1 className='font-["Inter Bold"] font-bold pb-2'>Name</h1>
       <input type="text" placeholder="Name" className="w-[20rem] input input-bordered max-w-xs" />  
   </div>
-  <div className="absolute top-[32rem] left-10 pl-16 z-20">
+  <div className="absolute top-[36rem] left-10 pl-16 z-20">
       <h1 className='font-["Inter Bold"] font-bold pb-2'>About Me</h1>
       <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="Bio"></textarea>
   </div>
 
-  <div className="absolute top-[45rem] left-10 pl-16 z-20">
+  <div className="absolute top-[50rem] left-10 pl-16 z-20">
       <h1 className='font-["Inter Bold"] font-bold pb-2'>Blogs</h1>
           <label
               htmlFor="uploadFile1"
@@ -83,14 +156,14 @@ const Dashboard = () => {
             </label>         
   </div>
 
-      <div className="absolute top-[60rem]  left-10  pl-16 z-20">
+      <div className="absolute top-[70rem]  left-10  pl-16 z-20">
           <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" />  
       </div>
       <div className="absolute top-[65rem] left-10 pl-16 z-20">
           <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About"></textarea>
       </div>
       <div className="absolute top-[77rem] space-x-5 pb-10 left-10 pl-16 z-20">
-         <button className=" btn btn-warning font-bold rounded-lg text-white">Save</button>
+      <button className=" btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button>
          <button
             type="button"
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-100 focus:ring focus:ring-gray-100 disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-400"

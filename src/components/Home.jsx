@@ -4,6 +4,13 @@ import { Link } from 'react-router-dom';
 import Screenshot from '../assets/Screenshot .png';
 import Navbar from './Navbar';
 import Footer from './Footer';
+
+
+import User1 from '../assets/user1.png'
+import User2 from '../assets/user2.png'
+import User3 from '../assets/user3.png'
+import User4 from '../assets/user4.png'
+import User5 from '../assets/user5.png'
 const Home = () => {
   return (
         <>
@@ -12,27 +19,27 @@ const Home = () => {
               <div className="avatar-group -space-x-6 rtl:space-x-reverse">
                 <div className="avatar">
                   <div className="w-12">
-                    <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                    <img src={User1} />
                   </div>
                 </div>
                 <div className="avatar">
                   <div className="w-12">
-                    <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                    <img src={User2} alt="" />
                   </div>
                 </div>
                 <div className="avatar">
                   <div className="w-12">
-                    <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                    <img src={User3} />
                   </div>
                 </div>
                 <div className="avatar">
                   <div className="w-12">
-                    <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                    <img src={User4} />
                   </div>
                 </div>
                 <div className="avatar">
                   <div className="w-12">
-                    <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                    <img src={User5} />
                   </div>
                 </div>
               </div>
