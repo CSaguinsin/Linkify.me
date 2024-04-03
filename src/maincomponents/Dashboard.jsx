@@ -5,12 +5,14 @@ import AvatarImage from '../assets/avatarImg.png'; // Default avatar image
 import Example from '../assets/example.jpg';
 import { signOut, updateProfile } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../assets/logo.png';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarURL, setAvatarURL] = useState(null);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [saveClicked, setSaveClicked] = useState(false); // State to track if the save button is clicked
 
   // Fetch user's avatar URL from Firebase Storage
   const fetchAvatarURL = async () => {
@@ -84,6 +86,9 @@ const Dashboard = () => {
 
       // Log success message
       console.log("Image saved successfully!");
+      
+      // Update saveClicked state to hide the save button
+      setSaveClicked(true);
     } catch (error) {
       console.error("Error saving image:", error);
     }
@@ -91,32 +96,63 @@ const Dashboard = () => {
 
   return (
     <>
-      <section>
-        <div className="relative">
-          <div className="grid grid-cols-3 min-h-[16rem] py-6 px-16 font-[sans-serif] overflow-hidden" style={{ backgroundImage: `url(${Example})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-          <div className="absolute top-[8rem] left-0 avatar pl-16 z-20">
-            <div className="w-[16rem] rounded-full">
-              <img src={avatarURL || AvatarImage} alt="Avatar" />
-            </div>
-          </div>
-          <div className="absolute top-[25rem] left-10 avatar pl-16 z-20">
-            <input type="file" className="file-input file-input-bordered file-input-xs w-full max-w-xs" onChange={handleFileChange} />
-          </div>
-        </div>
-      </section>
+    <div className="navbar bg-base-100">
+  <div className="navbar-start">
+    <div className="dropdown">
+      <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
+      </div>
+      <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+        <li><a onClick={handleLogout}>Log Out
+        </a></li>
+        <li><a>Share</a></li>
+        <li><a>About</a></li>
+      </ul>
+    </div>
+  </div>
+  <div className="navbar-center">
+    <img src={Logo} alt="Logo" className="w-30 h-10" />
+  </div>
+
+</div>
+<section>
+  <div className="relative">
+    <div className="grid grid-cols-3 min-h-[16rem] py-6 px-16 font-[sans-serif] overflow-hidden" style={{ backgroundImage: `url(${Example})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+    <div className="absolute top-[8rem] left-0 avatar pl-16 z-20">
+      <div className="w-[16rem] rounded-full">
+        <img src={avatarURL || AvatarImage} alt="Avatar" />
+      </div>
+    </div>
+    {/* Conditional rendering to hide the file input if avatarURL exists */}
+    {!avatarURL && (
+      <div className="absolute top-[25rem] left-10 avatar pl-16 z-20 space-x-5">
+        <input type="file" className="file-input file-input-bordered file-input-xs w-full max-w-xs" onChange={handleFileChange} />
+      </div>
+    )}
+  </div>
+  {/* Render the save button always */}
+  <div className={`absolute top-[27rem] left-10 avatar pl-16 z-20 space-x-5 ${saveClicked ? 'hidden' : ''}`}>
+    <button className="btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button>
+  </div>
+</section>
+
 
 
 <section>
-  <div className="absolute top-[30rem]  left-10  pl-16 z-20">
+  <div className="absolute top-[30rem] space-x-2  left-10  pl-16 z-20">
       <h1 className='font-["Inter Bold"] font-bold pb-2'>Name</h1>
       <input type="text" placeholder="Name" className="w-[20rem] input input-bordered max-w-xs" />  
+      <button className="btn btn-warning font-bold rounded-lg text-white" >Save</button>
   </div>
-  <div className="absolute top-[36rem] left-10 pl-16 z-20">
+  <div className="absolute top-[36rem] space-x-2 left-10 pl-16 z-20">
       <h1 className='font-["Inter Bold"] font-bold pb-2'>About Me</h1>
-      <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="Bio"></textarea>
+      <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="Bio"></textarea>   
+  </div>
+  <div className="absolute top-[50rem] space-x-2 left-10 pl-16 z-20">
+      <button className="btn btn-warning font-bold rounded-lg text-white" >Save</button>  
   </div>
 
-  <div className="absolute top-[50rem] left-10 pl-16 z-20">
+  <div className="absolute top-[55rem] space-x-2  left-10 pl-16 z-20">
       <h1 className='font-["Inter Bold"] font-bold pb-2'>Blogs</h1>
           <label
               htmlFor="uploadFile1"
@@ -144,7 +180,7 @@ const Dashboard = () => {
               <p className="text-xs text-gray-400 mt-2">
                 PNG, JPG SVG, WEBP, and GIF are Allowed.
               </p>
-            </label>         
+            </label>    
   </div>
 
       <div className="absolute top-[70rem]  left-10  pl-16 z-20">
@@ -154,7 +190,7 @@ const Dashboard = () => {
           <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About"></textarea>
       </div>
       <div className="absolute top-[77rem] space-x-5 pb-10 left-10 pl-16 z-20">
-      <button className="btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button>
+      {/* <button className="btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button> */}
          <button
             type="button"
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-100 focus:ring focus:ring-gray-100 disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-400"
