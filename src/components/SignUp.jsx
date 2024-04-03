@@ -7,22 +7,23 @@ import Logo from '../assets/logo.png'
 import Dashboard from '../maincomponents/Dashboard';
 import Navbar from './Navbar';
 import Footer from './Footer';
+
 const SignUp = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const [authChecked, setAuthChecked] = useState(false); // New state to indicate if authentication state has been checked
+  const [authChecked, setAuthChecked] = useState(false);
+  const [error, setError] = useState(null); // Define setError function to handle errors
 
   const handleEmailSignIn = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     try {
       setLoading(true);
-      await createUserWithEmailAndPassword(auth, email, password); // Pass 'auth' object
-      // No need for explicit redirection here as the auth state observer will handle it
+      await createUserWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      setError(error.message);
+      setError(error.message); // Set error message
     } finally {
       setLoading(false);
     }
@@ -31,36 +32,31 @@ const SignUp = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in, update the user state
         setUser(user);
       } else {
-        // User is signed out, set user state to null
         setUser(null);
       }
-      setAuthChecked(true); // Set authChecked to true once authentication state is checked
+      setAuthChecked(true);
     });
 
     return () => {
-      // Unsubscribe from the observer when the component unmounts
       unsubscribe();
     };
   }, []);
 
   useEffect(() => {
-    // Redirect to LandingPage if user is authenticated
-    if (authChecked && user !== null) { // Check if authentication state has been checked
-      navigate('/dashboard'); // Redirect only when authentication state is checked
+    if (authChecked && user !== null) {
+      navigate('/dashboard');
     }
   }, [user, navigate, authChecked]);
 
-  // Show loading spinner or error message
   if (!authChecked) {
     return <div>Loading...</div>;
   }
 
   return (
     <>
-    <Navbar />
+      <Navbar />
       <div className="bg-gray-50 font-[sans-serif] text-[#333]">
         <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
           <div className="max-w-md w-full border py-8 px-6 rounded border-gray-300 bg-white">
@@ -74,6 +70,7 @@ const SignUp = () => {
             <h2 className="text-center text-3xl font-bold">
               Create Account
             </h2>
+            {error && <div className="text-red-500">{error}</div>} {/* Display error message if error exists */}
             <form onSubmit={handleEmailSignIn} className="mt-10 space-y-4">
               <div>
                 <input

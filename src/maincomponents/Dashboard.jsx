@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
-import { auth, storage, db } from '../config/firebase';
+import { auth, storage } from '../config/firebase';
 import AvatarImage from '../assets/avatarImg.png'; // Default avatar image
 import Example from '../assets/example.jpg';
-import { signOut } from 'firebase/auth';
+import { signOut, updateProfile } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -13,48 +12,37 @@ const Dashboard = () => {
   const [avatarURL, setAvatarURL] = useState(null);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  // Fetch user's avatar URL from Firebase Storage
   const fetchAvatarURL = async () => {
-    if (!auth.currentUser) {
-      console.error("User is not authenticated.");
-      return;
-    }
-  
-    const q = query(collection(db, 'avatars'), where('userId', '==', auth.currentUser.uid));
-    const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      querySnapshot.forEach((doc) => {
-        const avatarURL = doc.data().avatarURL;
-        console.log("Avatar URL:", avatarURL); // Log the avatar URL
-        setAvatarURL(avatarURL);
-  
-        // Update the user's photoURL
-        auth.currentUser.updateProfile({
-          photoURL: avatarURL
-        }).then(() => {
-          console.log('Photo URL updated successfully');
-        }).catch((error) => {
-          console.error('Error updating photo URL:', error);
-        });
-      });
+    try {
+      if (!auth.currentUser) {
+        console.error("User is not authenticated.");
+        return;
+      }
+
+      const storageRef = ref(storage, `avatars/${auth.currentUser.uid}/AboutMe.jpg`);
+      const downloadURL = await getDownloadURL(storageRef);
+      console.log("Avatar URL:", downloadURL); // Log the avatar URL
+      setAvatarURL(downloadURL);
+    } catch (error) {
+      console.error("Error fetching avatar URL:", error);
     }
   };
-  
-  
 
-  useEffect(() => {
-    fetchAvatarURL();
-  }, []);
-
+  // Fetch user's avatar URL when component mounts
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         fetchAvatarURL(); // Fetch avatar URL when user logs in
+      } else {
+        setAvatarURL(null); // Clear avatar URL when user logs out
       }
     });
-    
+
     return unsubscribe;
   }, []);
 
+  // Handle logout
   const handleLogout = () => {
     setLoggingOut(true);
 
@@ -70,34 +58,37 @@ const Dashboard = () => {
       });
   };
 
+  // Handle file change
   const handleFileChange = (e) => {
     setAvatarFile(e.target.files[0]);
     setAvatarURL(URL.createObjectURL(e.target.files[0])); // Display selected image immediately
   };
 
+  // Handle save
   const handleSave = async () => {
     try {
       if (!auth.currentUser || !avatarFile) {
         console.error("User is not authenticated or no file selected.");
         return;
       }
-  
-      const storageRef = ref(storage, `avatars/${auth.currentUser.uid}/${avatarFile.name}`);
+
+      // Upload the image to Firebase Storage
+      const storageRef = ref(storage, `avatars/${auth.currentUser.uid}/AboutMe.jpg`);
       await uploadBytes(storageRef, avatarFile);
       const downloadURL = await getDownloadURL(storageRef);
-  
-      await addDoc(collection(db, 'avatars'), {
-        userId: auth.currentUser.uid,
-        avatarURL: downloadURL
+
+      // Update the user's photoURL with the download URL
+      await updateProfile(auth.currentUser, {
+        photoURL: downloadURL
       });
-  
+
+      // Log success message
       console.log("Image saved successfully!");
     } catch (error) {
       console.error("Error saving image:", error);
     }
   };
-  
-  
+
   return (
     <>
       <section>
@@ -163,7 +154,7 @@ const Dashboard = () => {
           <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About"></textarea>
       </div>
       <div className="absolute top-[77rem] space-x-5 pb-10 left-10 pl-16 z-20">
-      <button className=" btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button>
+      <button className="btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button>
          <button
             type="button"
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-100 focus:ring focus:ring-gray-100 disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-400"
