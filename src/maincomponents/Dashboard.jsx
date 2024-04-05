@@ -164,30 +164,33 @@ const handleSaveAbout = async () => {
 };
 
 
-  useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        console.log('Fetching user name...');
-        const userDocRef = doc(db, 'users', auth.currentUser.uid);
-        const userDocSnapshot = await getDoc(userDocRef);
-        
-        if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-          console.log('User data:', userData);
-          setName(userData.name);
-          setNameSaved(true);
-        } else {
-          console.log('User document does not exist.');
-        }
-      } catch (error) {
-        console.error('Error fetching user name:', error);
+useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      console.log('Fetching user data...');
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      const userDocSnapshot = await getDoc(userDocRef);
+      
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        console.log('User data:', userData);
+        setName(userData.name);
+        setAbout(userData.about); // Set the about state with data from Firestore
+        setNameSaved(true);
+        setAboutSaved(true); // Set aboutSaved to true when about data is retrieved
+      } else {
+        console.log('User document does not exist.');
       }
-    };
-  
-    if (auth.currentUser) {
-      fetchUserName();
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
-  }, []);
+  };
+
+  if (auth.currentUser) {
+    fetchUserData();
+  }
+}, []);
+
   
   return (
     <>
