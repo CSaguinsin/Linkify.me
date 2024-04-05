@@ -26,6 +26,7 @@ setPersistence(auth, browserSessionPersistence)
 export const googleProvider = new GoogleAuthProvider();
 export const firestore = getFirestore(app); // Change db to firestore
 export const storage = getStorage(app);
+export const db = firestore;
 
 
 // Export the Firebase app if needed

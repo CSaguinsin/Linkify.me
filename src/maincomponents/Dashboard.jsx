@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { auth, storage } from '../config/firebase';
+import { auth, storage, firestore } from '../config/firebase'; // Import firestore
 import AvatarImage from '../assets/avatarImg.png'; // Default avatar image
 import Example from '../assets/example.jpg';
 import { signOut, updateProfile } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/logo.png';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarURL, setAvatarURL] = useState(null);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [saveClicked, setSaveClicked] = useState(false); // State to track if the save button is clicked
+  const [saveClicked, setSaveClicked] = useState(false);
+  const [name, setName] = useState('');
+  const [nameSaved, setNameSaved] = useState(false);
+  const [about, setAbout] = useState ('');
+  const [aboutSaved, setAboutSaved] = useState(false);
 
   // Fetch user's avatar URL from Firebase Storage
   const fetchAvatarURL = async () => {
@@ -69,24 +77,26 @@ const Dashboard = () => {
   // Handle save
   const handleSave = async () => {
     try {
-      if (!auth.currentUser || !avatarFile) {
-        console.error("User is not authenticated or no file selected.");
+      if (!auth.currentUser) {
+        console.error("User is not authenticated.");
         return;
       }
 
       // Upload the image to Firebase Storage
-      const storageRef = ref(storage, `avatars/${auth.currentUser.uid}/AboutMe.jpg`);
-      await uploadBytes(storageRef, avatarFile);
-      const downloadURL = await getDownloadURL(storageRef);
+      if (avatarFile) {
+        const storageRef = ref(storage, `avatars/${auth.currentUser.uid}/AboutMe.jpg`);
+        await uploadBytes(storageRef, avatarFile);
+        const downloadURL = await getDownloadURL(storageRef);
 
-      // Update the user's photoURL with the download URL
-      await updateProfile(auth.currentUser, {
-        photoURL: downloadURL
-      });
+        // Update the user's photoURL with the download URL
+        await updateProfile(auth.currentUser, {
+          photoURL: downloadURL
+        });
 
-      // Log success message
-      console.log("Image saved successfully!");
-      
+        // Log success message
+        console.log("Image saved successfully!");
+      }
+
       // Update saveClicked state to hide the save button
       setSaveClicked(true);
     } catch (error) {
@@ -94,6 +104,91 @@ const Dashboard = () => {
     }
   };
 
+
+// Handle name input logic
+const handleSaveName = async () => {
+  try {
+    // Ensure user is authenticated
+    if (!auth.currentUser) {
+      console.error("User is not authenticated.");
+      return;
+    }
+
+    // Ensure name is not empty
+    if (name.trim() === '') {
+      console.error("Name cannot be empty.");
+      return;
+    }
+
+    // Update the existing document in Firestore with the user's UID as the document ID
+    await setDoc(doc(db, "users", auth.currentUser.uid), {
+      name: name,
+      // Preserve existing about data by retrieving it first and then updating the document
+      about: about
+    });
+
+    // Set state to indicate name is saved
+    setNameSaved(true);
+  } catch (error) {
+    console.error("Error adding name: ", error);
+  }
+};
+
+// Handle about input logic
+const handleSaveAbout = async () => {
+  try {
+    // Ensure user is authenticated
+    if (!auth.currentUser) {
+      console.error("User is not authenticated.");
+      return;
+    }
+
+    // Ensure about is not empty
+    if (about.trim() === '') {
+      console.error("About cannot be empty.");
+      return;
+    }
+
+    // Update the existing document in Firestore with the user's UID as the document ID
+    await setDoc(doc(db, "users", auth.currentUser.uid), {
+      // Preserve existing name data by retrieving it first and then updating the document
+      name: name,
+      about: about
+    });
+
+    // Set state to indicate about is saved
+    setAboutSaved(true);
+  } catch (error) {
+    console.error("Error adding about: ", error);
+  }
+};
+
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        console.log('Fetching user name...');
+        const userDocRef = doc(db, 'users', auth.currentUser.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+        
+        if (userDocSnapshot.exists()) {
+          const userData = userDocSnapshot.data();
+          console.log('User data:', userData);
+          setName(userData.name);
+          setNameSaved(true);
+        } else {
+          console.log('User document does not exist.');
+        }
+      } catch (error) {
+        console.error('Error fetching user name:', error);
+      }
+    };
+  
+    if (auth.currentUser) {
+      fetchUserName();
+    }
+  }, []);
+  
   return (
     <>
     <div className="navbar bg-base-100">
@@ -129,30 +224,66 @@ const Dashboard = () => {
         <input type="file" className="file-input file-input-bordered file-input-xs w-full max-w-xs" onChange={handleFileChange} />
       </div>
     )}
-  </div>
-  {/* Render the save button always */}
-  <div className={`absolute top-[27rem] left-10 avatar pl-16 z-20 space-x-5 ${saveClicked ? 'hidden' : ''}`}>
-    <button className="btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button>
+{/* Render the save button if avatarURL exists and saveClicked is false */}
+    <div className={`absolute top-[25rem] left-10 avatar pl-16 z-20 space-x-5 ${avatarURL && !saveClicked ? '' : 'hidden'}`}>
+      <button className="btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button>
+    </div>
   </div>
 </section>
 
 
-
 <section>
-  <div className="absolute top-[30rem] space-x-2  left-10  pl-16 z-20">
-      <h1 className='font-["Inter Bold"] font-bold pb-2'>Name</h1>
-      <input type="text" placeholder="Name" className="w-[20rem] input input-bordered max-w-xs" />  
-      <button className="btn btn-warning font-bold rounded-lg text-white" >Save</button>
-  </div>
-  <div className="absolute top-[36rem] space-x-2 left-10 pl-16 z-20">
+<div className="absolute top-[35rem] space-x-2 left-10 pl-16 z-20">
+        {/* Conditional rendering based on whether the name is saved or not */}
+        {nameSaved ? (
+          <div>
+            <h1 className='font-["Inter Bold"] font-bold pb-2'>{name}</h1>
+          </div>
+        ) : (
+          <div>
+            <h1 className='font-["Inter Bold"] font-bold pb-2'>Name</h1>
+            <input 
+              type="text" 
+              placeholder="Name" 
+              className="w-[20rem] input input-bordered max-w-xs" 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} 
+            />
+            <button 
+              className="btn btn-warning font-bold rounded-lg text-white" 
+              onClick={handleSaveName}
+            >
+              Save
+            </button>
+          </div>
+        )}
+      </div>
+<div className="absolute top-[37rem] space-x-2 left-10 pl-16 z-20">
+  {/* Conditional rendering based on whether the about is saved or not */}
+  {aboutSaved ? (
+    <div>
+      <h1 className='font-["Inter Bold"] font-bold pb-2'>{about}</h1>
+    </div>
+  ) : (
+    <div>
       <h1 className='font-["Inter Bold"] font-bold pb-2'>About Me</h1>
-      <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="Bio"></textarea>   
-  </div>
-  <div className="absolute top-[50rem] space-x-2 left-10 pl-16 z-20">
-      <button className="btn btn-warning font-bold rounded-lg text-white" >Save</button>  
-  </div>
+      <textarea 
+        className="textarea w-[20rem] h-[10rem] textarea-bordered" 
+        placeholder="Bio"
+        value={about}
+        onChange={(e) => setAbout(e.target.value)} // Update the about state
+      ></textarea>
+      <button 
+        className="btn btn-warning font-bold rounded-lg text-white mt-2" 
+        onClick={handleSaveAbout}
+      >
+        Save
+      </button>
+    </div>
+  )}
+</div>  
 
-  <div className="absolute top-[55rem] space-x-2  left-10 pl-16 z-20">
+  <div className="absolute top-[57rem] space-x-2  left-10 pl-16 z-20">
       <h1 className='font-["Inter Bold"] font-bold pb-2'>Blogs</h1>
           <label
               htmlFor="uploadFile1"
@@ -183,38 +314,11 @@ const Dashboard = () => {
             </label>    
   </div>
 
-      <div className="absolute top-[70rem]  left-10  pl-16 z-20">
+      <div className="absolute top-[72rem]  left-10  pl-16 z-20">
           <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" />  
       </div>
-      <div className="absolute top-[65rem] left-10 pl-16 z-20">
+      <div className="absolute top-[77rem] left-10 pl-16 z-20">
           <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About"></textarea>
-      </div>
-      <div className="absolute top-[77rem] space-x-5 pb-10 left-10 pl-16 z-20">
-      {/* <button className="btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button> */}
-         <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-100 focus:ring focus:ring-gray-100 disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-400"
-            onClick={handleLogout} // Add this line to attach handleLogout function to the onClick event
-          >
-            Log out
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="h-4 w-4"
-            >
-              <path
-                fillRule="evenodd"
-                d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z"
-                clipRule="evenodd"
-              />
-              <path
-                fillRule="evenodd"
-                d="M6 10a.75.75 0 01.75-.75h9.546l-1.048-.943a.75.75 0 111.004-1.114l2.5 2.25a.75.75 0 010 1.114l-2.5 2.25a.75.75 0 11-1.004-1.114l1.048-.943H6.75A.75.75 0 016 10z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
       </div>
   </section>
 
