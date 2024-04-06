@@ -12,6 +12,7 @@ import Footer from './components/Footer';
 
 // Main Components
 import Dashboard from './maincomponents/Dashboard';
+import Profile from './maincomponents/Profile';
 function App() {
   return (
     <>
@@ -23,6 +24,7 @@ function App() {
 
             {/* Routes after Auth */}
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
         </Routes>
         {/* <Footer /> */}
     </>
