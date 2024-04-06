@@ -22,7 +22,28 @@ const Dashboard = () => {
   const [nameSaved, setNameSaved] = useState(false);
   const [about, setAbout] = useState ('');
   const [aboutSaved, setAboutSaved] = useState(false);
+
+  const [twitterUsername, setTwitterUsername] = useState('');
+  const [twitterUsernameAdded, setTwitterUsernameAdded] = useState(false);
+  const [twitterUsernameInputVisible, setTwitterUsernameInputVisible] = useState(true);
+  const [addTwitterButtonVisible, setAddTwitterButtonVisible] = useState(true);
+  const [socialMediaUsername, setSocialMediaUsername] = useState('');
+
+  const [facebookUsername, setFacebookUsername] = useState('');
+  const [facebookUsernameAdded, setFacebookUsernameAdded] = useState(false);
+  const [facebookUsernameInputVisible, setFacebookUsernameInputVisible] = useState(true);
+  const [addFacebookButtonVisible, setAddFacebookButtonVisible] = useState(true);
+
+  const [instagramUsername, setInstagramUsername] = useState('');
+  const [instagramUsernameAdded, setInstagramUsernameAdded] = useState(false);
+  const [instagramUsernameInputVisible, setInstagramUsernameInputVisible] = useState(true);
+  const [addInstagramButtonVisible, setAddInstagramButtonVisible] = useState(true);
   
+
+  const [tiktokUsername, setTiktokUsername] = useState('');
+  const [tiktokusernameAdded, setTiktokUsernameAdded] = useState(false);
+  const [tiktokUsernameInputVisible, setTiktokUsernameInputVisible] = useState(true);
+  const [addTiktokButtonVisible, setAddTiktokButtonVisible] = useState(true);
 
 
 
@@ -171,6 +192,7 @@ const handleSaveAbout = async () => {
   }
 };
 
+
 // Logic on saving data into the Firestore (database)
 useEffect(() => {
   const fetchUserData = async () => {
@@ -184,6 +206,7 @@ useEffect(() => {
         console.log('User data:', userData);
         setName(userData.name);
         setAbout(userData.about); // Set the about state with data from Firestore
+        setFacebookUsername(userData.facebookUsername); // Set the Facebook username state with data from Firestore
         setNameSaved(true);
         setAboutSaved(true); // Set aboutSaved to true when about data is retrieved
       } else {
@@ -199,7 +222,232 @@ useEffect(() => {
   }
 }, []);
 
+// Handle adding Tiktok username
+const handleAddTiktokUsername = async () => {
+  try {
+    // Check if user is authenticated
+    if (!auth.currentUser) {
+      console.error("User is not authenticated.");
+      return;
+    }
+
+    // Check if Facebook username is empty
+    if (tiktokUsername.trim() === '') {
+      console.error("Tiktok username cannot be empty.");
+      return;
+    }
+
+    // Get a reference to the user's document
+    const userDocRef = doc(db, 'users', auth.currentUser.uid);
+
+    // Update the authenticated user's document with the Facebook username
+    await setDoc(userDocRef, { tiktokUsername: tiktokUsername }, { merge: true });
+
+    // Update state variables
+    setTiktokUsernameInputVisible(false);
+    setAddTiktokButtonVisible(false);
+  } catch (error) {
+    console.error("Error adding Tiktok username: ", error);
+  }
+};
+
+const fetchTiktokUsername = async () => {
+  try {
+    const userDocRef = doc(db, 'users', auth.currentUser.uid);
+    const userDocSnapshot = await getDoc(userDocRef);
+
+    if (userDocSnapshot.exists()) {
+      const userData = userDocSnapshot.data();
+      console.log('User data:', userData);
+      if (userData.tiktokUsername) {
+        setTiktokUsername(userData.tiktokUsername);
+        setTiktokUsernameAdded(true);
+        setTiktokUsernameInputVisible(false);
+        setAddTiktokButtonVisible(false);
+      }
+    } else {
+      console.log('User document does not exist.');
+    }
+  } catch (error) {
+    console.error('Error fetching Tiktok data:', error);
+  }
+};
+
+// Call fetchTwitterUsername when the component mounts
+useEffect(() => {
+  fetchTiktokUsername();
+}, []);
+
+  // Handle adding Insta username
+  const handleAddInstagramUsername = async () => {
+    try {
+      // Check if user is authenticated
+      if (!auth.currentUser) {
+        console.error("User is not authenticated.");
+        return;
+      }
   
+      // Check if Facebook username is empty
+      if (instagramUsername.trim() === '') {
+        console.error("Facebook username cannot be empty.");
+        return;
+      }
+  
+      // Get a reference to the user's document
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+  
+      // Update the authenticated user's document with the Facebook username
+      await setDoc(userDocRef, { instagramUsername: instagramUsername }, { merge: true });
+  
+      // Update state variables
+      setFacebookUsernameInputVisible(false);
+      setAddFacebookButtonVisible(false);
+    } catch (error) {
+      console.error("Error adding Instagram username: ", error);
+    }
+  };
+
+  const fetchInstagramUsername = async () => {
+    try {
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      const userDocSnapshot = await getDoc(userDocRef);
+  
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        console.log('User data:', userData);
+        if (userData.instagramUsername) {
+          setInstagramUsername(userData.instagramUsername);
+          setInstagramUsernameAdded(true);
+          setInstagramUsernameInputVisible(false);
+          setAddInstagramButtonVisible(false);
+        }
+      } else {
+        console.log('User document does not exist.');
+      }
+    } catch (error) {
+      console.error('Error fetching Twitter data:', error);
+    }
+  };
+  
+  // Call fetchTwitterUsername when the component mounts
+  useEffect(() => {
+    fetchInstagramUsername();
+  }, []);
+
+
+  // Handle adding Facebook username
+  const handleAddFacebookUsername = async () => {
+    try {
+      // Check if user is authenticated
+      if (!auth.currentUser) {
+        console.error("User is not authenticated.");
+        return;
+      }
+  
+      // Check if Facebook username is empty
+      if (facebookUsername.trim() === '') {
+        console.error("Facebook username cannot be empty.");
+        return;
+      }
+  
+      // Get a reference to the user's document
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+  
+      // Update the authenticated user's document with the Facebook username
+      await setDoc(userDocRef, { facebookUsername: facebookUsername }, { merge: true });
+  
+      // Update state variables
+      setFacebookUsernameInputVisible(false);
+      setAddFacebookButtonVisible(false);
+    } catch (error) {
+      console.error("Error adding Facebook username: ", error);
+    }
+  };
+
+  const fetchFacebookUsername = async () => {
+    try {
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      const userDocSnapshot = await getDoc(userDocRef);
+  
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        console.log('User data:', userData);
+        if (userData.twitterUsername) {
+          setFacebookUsername(userData.facebookUsername);
+          setFacebookUsernameAdded(true);
+          setFacebookUsernameInputVisible(false);
+          setAddFacebookButtonVisible(false);
+        }
+      } else {
+        console.log('User document does not exist.');
+      }
+    } catch (error) {
+      console.error('Error fetching Twitter data:', error);
+    }
+  };
+  
+  // Call fetchTwitterUsername when the component mounts
+  useEffect(() => {
+    fetchFacebookUsername();
+  }, []);
+  
+
+const handleAddTwitterUsername = async () => {
+  try {
+    if (!auth.currentUser) {
+      console.error("User is not authenticated.");
+      return;
+    }
+
+    if (twitterUsername.trim() === '') {
+      console.error("Twitter username cannot be empty.");
+      return;
+    }
+
+    // Get a reference to the user's document
+    const userDocRef = doc(db, 'users', auth.currentUser.uid);
+
+    // Update the authenticated user's document with the Twitter username
+    await setDoc(userDocRef, { twitterUsername: twitterUsername }, { merge: true });
+
+    // Update state variables
+    setTwitterUsernameAdded(true);
+    setTwitterUsernameInputVisible(false);
+    setAddTwitterButtonVisible(false);
+  } catch (error) {
+    console.error("Error adding Twitter username: ", error);
+  }
+};
+
+// Fetch Twitter username data from Firestore
+const fetchTwitterUsername = async () => {
+  try {
+    const userDocRef = doc(db, 'users', auth.currentUser.uid);
+    const userDocSnapshot = await getDoc(userDocRef);
+
+    if (userDocSnapshot.exists()) {
+      const userData = userDocSnapshot.data();
+      console.log('User data:', userData);
+      if (userData.twitterUsername) {
+        setTwitterUsername(userData.twitterUsername);
+        setTwitterUsernameAdded(true);
+        setTwitterUsernameInputVisible(false);
+        setAddTwitterButtonVisible(false);
+      }
+    } else {
+      console.log('User document does not exist.');
+    }
+  } catch (error) {
+    console.error('Error fetching Twitter data:', error);
+  }
+};
+
+// Call fetchTwitterUsername when the component mounts
+useEffect(() => {
+  fetchTwitterUsername();
+}, []);
+
+
   return (
     <>
     <div className="navbar bg-base-100">
@@ -224,19 +472,20 @@ useEffect(() => {
 <section>
         <div className="relative">
           <div className="grid grid-cols-3 min-h-[16rem] py-6 px-16 font-[sans-serif] overflow-hidden" style={{ backgroundImage: `url(${Example})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
-          <div className="absolute top-[8rem] left-0 avatar pl-16 z-20">
-            <div className="w-[16rem] rounded-full">
-              <img src={avatarURL || AvatarImage} alt="Avatar" />
-            </div>
+          <div className="absolute top-[8rem] left-1/2 transform -translate-x-1/2 avatar z-20">
+              <div className="w-[16rem] rounded-full">
+                  <img src={avatarURL || AvatarImage} alt="Avatar" />
+              </div>
           </div>
+
           {/* Conditional rendering to hide the file input if avatarURL exists */}
           {!avatarURL && (
-            <div className="absolute top-[25rem] left-10 avatar pl-16 z-20 space-x-5">
+            <div className="absolute top-[25rem] left-1/2 transform -translate-x-1/2 avatar z-20 space-x-5">
               <input type="file" className="file-input file-input-bordered file-input-xs w-full max-w-xs" onChange={handleFileChange} />
             </div>
           )}
           {/* Render the save button if avatarURL exists and saveClicked is false */}
-          <div className={`absolute top-[25rem] left-10 avatar pl-16 z-20 space-x-5 ${!avatarURL || saveClicked ? 'hidden' : ''}`}>
+          <div className={`absolute top-[25rem] left-1/2 transform -translate-x-1/2 avatar z-20" space-x-5 ${!avatarURL || saveClicked ? 'hidden' : ''}`}>
             <button className="btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button>
           </div>
         </div>
@@ -246,7 +495,7 @@ useEffect(() => {
 
 <section>
         {/* Name section */}
-        <div className="absolute top-[32rem] space-x-5 left-10 pl-16 z-20">
+        <div className="absolute top-[32rem] pb-10 left-1/2 transform -translate-x-1/2 avatar z-20">
           {nameSaved ? (
             <h1 className='font-["Inter Bold"] font-bold text-[3rem] pb-2'>{name}</h1>
           ) : (
@@ -269,15 +518,11 @@ useEffect(() => {
           )}
         </div>
         {/* About section */}
-        <div className="absolute top-[38rem] max-w-96 space-x-5 left-10 pl-16 z-20">
-
-              <h1 className='font-["Inter Bold"] font-sans pb-2'>{about}</h1>
-            </div>
-        <div className="absolute top-[41rem] max-w-96 space-x-5 left-10 pl-16 z-20">
+        <div className="absolute top-[38rem] max-w-96 left-1/2 transform -translate-x-1/2 avatar z-20">
           {aboutSaved ? (
             <div>
-              {/* <h1 className='font-["Inter Bold"] font-bold pb-2'>About Me</h1>
-              <h1 className='font-["Inter Bold"] font-sans pb-2'>{about}</h1> */}
+              <h1 className='font-["Inter Bold"] text-center font-bold pb-2'>About Me</h1>
+              <h1 className='font-["Inter Bold"] font-sans pb-2'>{about}</h1>
             </div>
           ) : (
             <div>
@@ -298,135 +543,201 @@ useEffect(() => {
           )}
         </div>
 
+        <section>
+      <div className="absolute top-[50rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
+          <h1 className='font-["Inter Bold"] font-bold pb-2'>Social Media</h1>
+          <div className="flex flex-row space-x-5">
+              <img
+                width={50}
+                height={50}
+                src="https://img.icons8.com/ios-filled/50/twitterx--v1.png"
+                alt="twitterx--v1"
+              />
+              {twitterUsernameAdded ? (
+                <input
+                  type="text"
+                  placeholder="@username"
+                  className="w-[20rem] max-w-xs font-mono"
+                  value={twitterUsername}
+                  readOnly
+                />
+              ) : (
+                twitterUsernameInputVisible && (
+                  <input
+                    type="text"
+                    placeholder="@username"
+                    className="w-[20rem] input input-bordered max-w-xs"
+                    value={twitterUsername}
+                    onChange={(e) => setTwitterUsername(e.target.value)}
+                  />
+                )
+              )}
+              {addTwitterButtonVisible && (
+                <button
+                  className="btn btn-warning font-bold rounded-lg text-white"
+                  onClick={handleAddTwitterUsername}
+                >
+                  + Add
+                </button>
+              )}
+            </div>
 
-  <div className="absolute top-[57rem] space-x-2  left-10 pl-16 z-20">
+{/* Facebook section */}
+
+<div className="flex flex-row space-x-5 pt-5">
+  <img
+    width={50}
+    height={50}
+    src="https://img.icons8.com/color/48/facebook.png"
+    alt="facebook"
+  />
+  {facebookUsernameAdded ? (
+    <input
+      type="text"
+      placeholder="@username"
+      className="w-[20rem] max-w-xs font-mono"
+      value={facebookUsername} // This value might be causing the warning
+      readOnly
+    />
+  ) : (
+    facebookUsernameInputVisible && (
+      <input
+        type="text"
+        placeholder="@username"
+        className="w-[20rem] input input-bordered max-w-xs"
+        value={facebookUsername} // This value might be causing the warning
+        onChange={(e) => setFacebookUsername(e.target.value)}
+      />
+    )
+  )}
+  {addFacebookButtonVisible && (
+    <button
+      className="btn btn-warning font-bold rounded-lg text-white"
+      onClick={handleAddFacebookUsername}
+    >
+      + Add
+    </button>
+  )}
+</div>
+
+      {/* Instagram section */}
+{/* Instagram section */}
+<div className="flex flex-row space-x-5 pt-5">
+  <img
+    width={50}
+    height={50}
+    src="https://img.icons8.com/fluency/48/instagram-new.png"
+    alt="instagram-new"
+  />
+  {instagramUsernameAdded ? (
+    <input
+      type="text"
+      placeholder="@username"
+      className="w-[20rem] max-w-xs font-mono"
+      value={instagramUsername}
+      readOnly
+    />
+  ) : (
+    instagramUsernameInputVisible && (
+      <input
+        type="text"
+        placeholder="@username"
+        className="w-[20rem] input input-bordered max-w-xs"
+        value={instagramUsername}
+        onChange={(e) => setInstagramUsername(e.target.value)} // Update setInstagramUsername here
+      />
+    )
+  )}
+  {addInstagramButtonVisible && (
+    <button
+      className="btn btn-warning font-bold rounded-lg text-white"
+      onClick={handleAddInstagramUsername}
+    >
+      + Add
+    </button>
+  )}
+</div>
+
+<div className="flex flex-row space-x-5 pt-5">
+<img
+          width={50}
+          height={50}
+          src="https://img.icons8.com/ios-filled/50/tiktok--v1.png"
+          alt="tiktok--v1"
+        />
+  {tiktokusernameAdded ? ( // Corrected variable name here
+    <input
+      type="text"
+      placeholder="@username"
+      className="w-[20rem] max-w-xs font-mono"
+      value={tiktokUsername}
+      readOnly
+    />
+  ) : (
+    tiktokUsernameInputVisible && (
+      <input
+        type="text"
+        placeholder="@username"
+        className="w-[20rem] input input-bordered max-w-xs"
+        value={tiktokUsername}
+        onChange={(e) => setTiktokUsername(e.target.value)}
+      />
+    )
+  )}
+  {addTiktokButtonVisible && (
+    <button
+      className="btn btn-warning font-bold rounded-lg text-white"
+      onClick={handleAddTiktokUsername}
+    >
+      + Add
+    </button>
+  )}
+</div>
+</div>
+  </section>
+
+  <div className="absolute top-[69rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
       <h1 className='font-["Inter Bold"] font-bold pb-2'>Blogs</h1>
-          <label
-              htmlFor="uploadFile1"
-              className="bg-white text-center rounded w-full sm:w-[360px] min-h-[160px] py-4 px-4 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 mx-auto font-[sans-serif] m-4"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-8 mb-6 fill-gray-400"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M22 13a1 1 0 0 0-1 1v4.213A2.79 2.79 0 0 1 18.213 21H5.787A2.79 2.79 0 0 1 3 18.213V14a1 1 0 0 0-2 0v4.213A4.792 4.792 0 0 0 5.787 23h12.426A4.792 4.792 0 0 0 23 18.213V14a1 1 0 0 0-1-1Z"
-                  data-original="#000000"
-                />
-                <path
-                  d="M6.707 8.707 11 4.414V17a1 1 0 0 0 2 0V4.414l4.293 4.293a1 1 0 0 0 1.414-1.414l-6-6a1 1 0 0 0-1.414 0l-6 6a1 1 0 0 0 1.414 1.414Z"
-                  data-original="#000000"
-                />
-              </svg>
-              <p className="text-gray-400 font-semibold text-sm">
-                Drag &amp; Drop or <span className="text-[#007bff]">Choose file</span> to
-                upload
-              </p>
-              <input type="file" id="uploadFile1" className="hidden" />
-              <p className="text-xs text-gray-400 mt-2">
-                PNG, JPG SVG, WEBP, and GIF are Allowed.
-              </p>
-            </label>    
+      <label
+    htmlFor="uploadFile1"
+    className="bg-white text-center rounded w-full sm:w-[360px] min-h-[160px] py-4 px-4 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 mx-auto font-[sans-serif] m-4"
+>
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-8 mb-6 fill-gray-400"
+        viewBox="0 0 24 24"
+    >
+        <path
+            d="M22 13a1 1 0 0 0-1 1v4.213A2.79 2.79 0 0 1 18.213 21H5.787A2.79 2.79 0 0 1 3 18.213V14a1 1 0 0 0-2 0v4.213A4.792 4.792 0 0 0 5.787 23h12.426A4.792 4.792 0 0 0 23 18.213V14a1 1 0 0 0-1-1Z"
+            data-original="#000000"
+        />
+        <path
+            d="M6.707 8.707 11 4.414V17a1 1 0 0 0 2 0V4.414l4.293 4.293a1 1 0 0 0 1.414-1.414l-6-6a1 1 0 0 0-1.414 0l-6 6a1 1 0 0 0 1.414 1.414Z"
+            data-original="#000000"
+        />
+    </svg>
+    <p className="text-gray-400 font-semibold text-sm">
+        Drag &amp; Drop or <span className="text-[#007bff]">Choose file</span> to
+        upload
+    </p>
+    <input type="file" id="uploadFile1" className="hidden" />
+    <p className="text-xs text-gray-400 mt-2">
+        PNG, JPG SVG, WEBP, and GIF are Allowed.
+    </p>
+</label>
+  
   </div> 
-
-
-
-<div className="absolute top-[57rem] space-x-2  left-10 pl-16 z-20">
-      <h1 className='font-["Inter Bold"] font-bold pb-2'>Blogs</h1>
-          <label
-              htmlFor="uploadFile1"
-              className="bg-white text-center rounded w-full sm:w-[360px] min-h-[160px] py-4 px-4 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 mx-auto font-[sans-serif] m-4"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-8 mb-6 fill-gray-400"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M22 13a1 1 0 0 0-1 1v4.213A2.79 2.79 0 0 1 18.213 21H5.787A2.79 2.79 0 0 1 3 18.213V14a1 1 0 0 0-2 0v4.213A4.792 4.792 0 0 0 5.787 23h12.426A4.792 4.792 0 0 0 23 18.213V14a1 1 0 0 0-1-1Z"
-                  data-original="#000000"
-                />
-                <path
-                  d="M6.707 8.707 11 4.414V17a1 1 0 0 0 2 0V4.414l4.293 4.293a1 1 0 0 0 1.414-1.414l-6-6a1 1 0 0 0-1.414 0l-6 6a1 1 0 0 0 1.414 1.414Z"
-                  data-original="#000000"
-                />
-              </svg>
-              <p className="text-gray-400 font-semibold text-sm">
-                Drag &amp; Drop or <span className="text-[#007bff]">Choose file</span> to
-                upload
-              </p>
-              <input type="file" id="uploadFile1" className="hidden" />
-              <p className="text-xs text-gray-400 mt-2">
-                PNG, JPG SVG, WEBP, and GIF are Allowed.
-              </p>
-            </label>    
-  </div>
-
-      <div className="absolute top-[72rem]  left-10  pl-16 z-20">
+      <div className="absolute top-[83rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
           <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" />  
       </div>
-      <div className="absolute top-[77rem] left-10 pl-16 z-20">
+      <div className="absolute top-[87rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
           <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About"></textarea>
       </div>
-  </section>
-
-  <section>
-      <div className="absolute top-[25rem] right-80  z-20">
-          <h1 className='font-["Inter Bold"] font-bold pb-2'>Social Media</h1>
-          <div className="flex flex-row space-x-5 ">      
-          <img
-            width={50}
-            height={50}
-            src="https://img.icons8.com/ios-filled/50/twitterx--v1.png"
-            alt="twitterx--v1"
-          />
-              <input type="text" placeholder="@username" className="w-[20rem] input input-bordered max-w-xs" />
-              <button className=" btn btn-warning font-bold rounded-lg text-white">+ Add</button>  
-          </div>
-
-          <div className="flex flex-row space-x-5 pt-5 ">       
-          <img
-            width={50}
-            height={50}
-            src="https://img.icons8.com/color/48/facebook.png"
-            alt="facebook"
-          />
-
-              <input type="text" placeholder="@username" className="w-[20rem] input input-bordered max-w-xs" />  
-              <button className=" btn btn-warning font-bold rounded-lg text-white">+ Add</button>
-          </div>
-
-          <div className="flex flex-row space-x-5 pt-5 ">       
-          <img
-            width={50}
-            height={50}
-            src="https://img.icons8.com/fluency/48/instagram-new.png"
-            alt="instagram-new"
-          />
-
-              <input type="text" placeholder="@username" className="w-[20rem] input input-bordered max-w-xs" /> 
-              <button className=" btn btn-warning font-bold rounded-lg text-white">+ Add</button> 
-          </div>
-
-          <div className="flex flex-row space-x-5 pt-5 ">       
-          <img
-              width={50}
-              height={50}
-              src="https://img.icons8.com/ios-filled/50/tiktok--v1.png"
-              alt="tiktok--v1"
-            />
-
-              <input type="text" placeholder="@username" className="w-[20rem] input input-bordered max-w-xs" />  
-              <button className=" btn btn-warning font-bold rounded-lg text-white">+ Add</button>
-          </div>
-      </div>
-      <div className="absolute top-[50rem] right-[28rem]  z-20">
-        <Link to='/profile'>
-          <button className="btn btn-wide btn-success text-white font-sans">See Result</button>  
-        </Link>
+      <div className="absolute top-[98rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
+      <button className="btn btn-warning font-bold rounded-lg text-white mt-2" >Save</button>
       </div>
   </section>
+
 
     </>
   )
