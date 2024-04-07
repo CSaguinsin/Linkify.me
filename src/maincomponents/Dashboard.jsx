@@ -6,9 +6,8 @@ import Example from '../assets/example.jpg';
 import { signOut, updateProfile } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/logo.png';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import 'firebase/firestore';
@@ -508,28 +507,26 @@ const handleSaveBlog = async () => {
   }
 };
 
-
-  
-
   // Function to fetch and display the saved blog
   useEffect(() => {
     const fetchBlogs = async () => {
-      const db = firebase.firestore();
-      const snapshot = await db.collection('blogs').get();
-      const fetchedBlogs = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      console.log("Fetched Blogs:", fetchedBlogs); // Log fetched blogs
-      setBlogs(fetchedBlogs);
+      const q = query(collection(db, "blogs"), where("uid", "==", auth.currentUser.uid));
+      const querySnapshot = await getDocs(q);
+
+      // this prevents the blogs array from accumulating
+      // old data in dev mode's HMR
+      let blogsArray = [];
+
+      querySnapshot.forEach((doc) => {
+        blogsArray.push(doc.data());
+      });
+
+      setBlogs(blogsArray);
     };
-  
+
     fetchBlogs();
-  }, []);
+  }, [blogs]);
   
-
-
-
 
   return (
     <>
@@ -820,16 +817,18 @@ const handleSaveBlog = async () => {
       <div className="absolute top-[98rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
         <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
       </div>
+
+      <div className="columns-3 gap-8 top-[106rem] absolute left-1/2 max-w-[90%] transform -translate-x-1/2 mx-auto z-20">
       {blogs.map(blog => (
-        <div key={blog.id} className=" top-[100rem] absolute max-w-96 left-1/2 transform -translate-x-1/2  z-20">
-          <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" value={blog.title} onChange={(e) => setBlogTitle(e.target.value)} />
-          <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About" value={blog.about} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
-          <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
-        </div>
+          <div key={blog.uid} className="max-w-96">
+            <img src={blog.imageURL} alt="Blog image" className="aspect-square object-cover w-[20rem] h-[10rem] mb-4" />
+            <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" value={blog.title} onChange={(e) => setBlogTitle(e.target.value)} />
+            <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered my-2" placeholder="About" value={blog.about} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
+            <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
+          </div>
       ))}
+        </div>
   </section>
-
-
     </>
   )
 }
