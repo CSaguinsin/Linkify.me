@@ -10,7 +10,8 @@ import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-
+import { getAuth } from 'firebase/auth';
+import 'firebase/firestore';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -22,6 +23,12 @@ const Dashboard = () => {
   const [nameSaved, setNameSaved] = useState(false);
   const [about, setAbout] = useState ('');
   const [aboutSaved, setAboutSaved] = useState(false);
+  const [blogTitle, setBlogTitle] = useState('');
+  const [blogAbout, setBlogAbout] = useState('');
+  const [blogImage, setBlogImage] = useState(null);
+  const [blogImageURL, setBlogImageURL] = useState('');
+  const [blogs, setBlogs] = useState([]);
+  
 
   const [twitterUsername, setTwitterUsername] = useState('');
   const [twitterUsernameAdded, setTwitterUsernameAdded] = useState(false);
@@ -448,6 +455,82 @@ useEffect(() => {
 }, []);
 
 
+// Function to handle blog image change
+const handleBlogImageChange = (e) => {
+  if (e.target.files[0]) {
+    setBlogImage(e.target.files[0]);
+  }
+};
+
+// Function to handle blog title change
+const handleBlogTitleChange = (e) => {
+  setBlogTitle(e.target.value);
+};
+
+// Function to handle blog about change
+const handleBlogAboutChange = (e) => {
+  setBlogAbout(e.target.value);
+};
+
+// Function to handle saving the blog
+const handleSaveBlog = async () => {
+  try {
+    // Check if blog image exists
+    if (!blogImage) {
+      console.error('Blog image is required.');
+      return;
+    }
+
+    // Get the UID of the authenticated user
+    const user = auth.currentUser;
+    const uid = user.uid;
+
+    // Upload blog image to Firebase Storage
+    const storageRef = ref(storage, `blogImages/${blogImage.name}`);
+    await uploadBytes(storageRef, blogImage);
+    const imageURL = await getDownloadURL(storageRef);
+
+    // Save blog information to Firestore with UID
+    await addDoc(collection(firestore, 'blogs'), {
+      uid: uid,
+      title: blogTitle,
+      about: blogAbout,
+      imageURL: imageURL,
+    });
+
+    // Clear input fields after saving
+    setBlogTitle('');
+    setBlogAbout('');
+    setBlogImage(null);
+    setBlogImageURL('');
+  } catch (error) {
+    console.error('Error saving blog:', error);
+  }
+};
+
+
+  
+
+  // Function to fetch and display the saved blog
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      const db = firebase.firestore();
+      const snapshot = await db.collection('blogs').get();
+      const fetchedBlogs = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      console.log("Fetched Blogs:", fetchedBlogs); // Log fetched blogs
+      setBlogs(fetchedBlogs);
+    };
+  
+    fetchBlogs();
+  }, []);
+  
+
+
+
+
   return (
     <>
     <div className="navbar bg-base-100">
@@ -489,7 +572,7 @@ useEffect(() => {
             <button className="btn btn-warning font-bold rounded-lg text-white" onClick={handleSave}>Save</button>
           </div>
         </div>
-      </section>
+</section>
 
 
 
@@ -696,46 +779,54 @@ useEffect(() => {
 </div>
   </section>
 
+
+
   <div className="absolute top-[69rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
-      <h1 className='font-["Inter Bold"] font-bold pb-2'>Blogs</h1>
-      <label
-    htmlFor="uploadFile1"
-    className="bg-white text-center rounded w-full sm:w-[360px] min-h-[160px] py-4 px-4 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 mx-auto font-[sans-serif] m-4"
->
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-8 mb-6 fill-gray-400"
-        viewBox="0 0 24 24"
-    >
-        <path
-            d="M22 13a1 1 0 0 0-1 1v4.213A2.79 2.79 0 0 1 18.213 21H5.787A2.79 2.79 0 0 1 3 18.213V14a1 1 0 0 0-2 0v4.213A4.792 4.792 0 0 0 5.787 23h12.426A4.792 4.792 0 0 0 23 18.213V14a1 1 0 0 0-1-1Z"
-            data-original="#000000"
-        />
-        <path
-            d="M6.707 8.707 11 4.414V17a1 1 0 0 0 2 0V4.414l4.293 4.293a1 1 0 0 0 1.414-1.414l-6-6a1 1 0 0 0-1.414 0l-6 6a1 1 0 0 0 1.414 1.414Z"
-            data-original="#000000"
-        />
-    </svg>
-    <p className="text-gray-400 font-semibold text-sm">
-        Drag &amp; Drop or <span className="text-[#007bff]">Choose file</span> to
-        upload
-    </p>
-    <input type="file" id="uploadFile1" className="hidden" />
-    <p className="text-xs text-gray-400 mt-2">
-        PNG, JPG SVG, WEBP, and GIF are Allowed.
-    </p>
-</label>
-  
-  </div> 
+        <h1 className='font-["Inter Bold"] font-bold pb-2'>Blogs</h1>
+        <label
+          htmlFor="uploadFile1"
+          className="bg-white text-center rounded w-full sm:w-[360px] min-h-[160px] py-4 px-4 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 mx-auto font-[sans-serif] m-4"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-8 mb-6 fill-gray-400"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M22 13a1 1 0 0 0-1 1v4.213A2.79 2.79 0 0 1 18.213 21H5.787A2.79 2.79 0 0 1 3 18.213V14a1 1 0 0 0-2 0v4.213A4.792 4.792 0 0 0 5.787 23h12.426A4.792 4.792 0 0 0 23 18.213V14a1 1 0 0 0-1-1Z"
+              data-original="#000000"
+            />
+            <path
+              d="M6.707 8.707 11 4.414V17a1 1 0 0 0 2 0V4.414l4.293 4.293a1 1 0 0 0 1.414-1.414l-6-6a1 1 0 0 0-1.414 0l-6 6a1 1 0 0 0 1.414 1.414Z"
+              data-original="#000000"
+            />
+          </svg>
+          <p className="text-gray-400 font-semibold text-sm">
+            Drag &amp; Drop or <span className="text-[#007bff]">Choose file</span> to
+            upload
+          </p>
+          <input type="file" id="uploadFile1" className="hidden" onChange={handleBlogImageChange} />
+          <p className="text-xs text-gray-400 mt-2">
+            PNG, JPG SVG, WEBP, and GIF are Allowed.
+          </p>
+        </label>
+      </div>
       <div className="absolute top-[83rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
-          <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" />  
+        <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" value={blogTitle} onChange={(e) => setBlogTitle(e.target.value)} />
       </div>
       <div className="absolute top-[87rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
-          <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About"></textarea>
+        <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About" value={blogAbout} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
       </div>
       <div className="absolute top-[98rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
-      <button className="btn btn-warning font-bold rounded-lg text-white mt-2" >Save</button>
+        <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
       </div>
+      {blogs.map(blog => (
+        <div key={blog.id} className=" top-[100rem] absolute max-w-96 left-1/2 transform -translate-x-1/2  z-20">
+          <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" value={blog.title} onChange={(e) => setBlogTitle(e.target.value)} />
+          <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About" value={blog.about} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
+          <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
+        </div>
+      ))}
   </section>
 
 
