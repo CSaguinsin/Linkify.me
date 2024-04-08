@@ -543,10 +543,14 @@ const handleSaveBlog = async () => {
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
       </div>
       <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-        <li><a onClick={handleLogout}>Log Out
-        </a></li>
-        <li><a>Share</a></li>
-        <li><a>About</a></li>
+        <li>
+          <a onClick={handleLogout}>Log Out</a>
+        </li>
+        <Link to='/feedback'>
+        <li>
+          <a>Write some feedback</a>
+        </li>
+        </Link>
       </ul>
     </div>
   </div>
@@ -581,7 +585,7 @@ const handleSaveBlog = async () => {
 
 <section>
         {/* Name section */}
-        <div className="absolute top-[33rem] pb-10 left-1/2 transform -translate-x-1/2 avatar z-20">
+        <div className="absolute top-[33rem] pb-10 left-1/2 transform  -translate-x-1/2 avatar z-20">
           {nameSaved ? (
             <h1 className='font-["Inter Bold"] font-bold text-[3rem] pb-2'>{name}</h1>
           ) : (
@@ -825,7 +829,6 @@ const handleSaveBlog = async () => {
     </div>
   ))}
 </div>
-
 </section>
  
     </>

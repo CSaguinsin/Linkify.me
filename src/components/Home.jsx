@@ -6,6 +6,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 
 
+
 import User1 from '../assets/user1.png'
 import User2 from '../assets/user2.png'
 import User3 from '../assets/user3.png'
@@ -18,7 +19,16 @@ const Home = () => {
         <p class='text-sm font-medium'>Thanks for using Linkify! This is just the MVP version. Please send feedback to improve your experience.</p>    
     </section>
         <Navbar />
-            <div className="flex justify-center space-x-3 pt-10">   
+            <h1 className='text-center  font-bold text-[80px]'>
+            Where Every <span className="text-[#FF914D]">Link</span> Leads <br /> to <span className="text-[#FF914D]">Possibility</span>
+            </h1>
+            <div className="flex justify-center pt-5 space-x-3">
+            <label className="input input-bordered flex  items-center gap-2">Linkify.me/<input type="text" className="grow" placeholder="yourname" /></label>
+            <Link to="/login" >
+                <button className="btn btn-warning font-bold rounded-lg text-white">Claim your Linkify</button>
+            </Link>
+            </div>
+            <div className="flex  justify-center space-x-3 pt-10">   
               <div className="avatar-group -space-x-6 rtl:space-x-reverse">
                 <div className="avatar">
                   <div className="w-12">
@@ -48,16 +58,6 @@ const Home = () => {
               </div>
               <p className="flex items-center font-['Inter Bold'] font-semibold">150+ People are using Linkify</p>
             </div>
-            <h1 className='text-center  font-bold text-[80px]'>
-            Where Every <span className="text-[#FF914D]">Link</span> Leads <br /> to <span className="text-[#FF914D]">Possibility</span>
-            </h1>
-            <div className="flex justify-center pt-5 space-x-3">
-            <label className="input input-bordered flex  items-center gap-2">Linkify.me/<input type="text" className="grow" placeholder="yourname" /></label>
-            <Link to="/login" >
-                <button className="btn btn-warning font-bold rounded-lg text-white">Claim your Linkify</button>
-            </Link>
-            </div>
-
             <div className='flex pt-5 items-center justify-center pb-10 '>
               <img src={Sample} alt="sample" className="w-[70rem] rounded-lg shadow-lg" />
 
