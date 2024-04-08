@@ -27,6 +27,8 @@ const Dashboard = () => {
   const [blogImage, setBlogImage] = useState(null);
   const [blogImageURL, setBlogImageURL] = useState('');
   const [blogs, setBlogs] = useState([]);
+  const [saveButtonVisible, setSaveButtonVisible] = useState(true);
+
   
 
   const [twitterUsername, setTwitterUsername] = useState('');
@@ -505,6 +507,7 @@ const handleSaveBlog = async () => {
   } catch (error) {
     console.error('Error saving blog:', error);
   }
+  setSaveButtonVisible(false);
 };
 
   // Function to fetch and display the saved blog
@@ -602,7 +605,7 @@ const handleSaveBlog = async () => {
           {aboutSaved ? (
             <div>
               <h1 className='font-["Inter Bold"] text-center font-bold pb-2'>About Me</h1>
-              <h1 className='font-["Inter Bold"] font-sans pb-2'>{about}</h1>
+              <h1 className='font-["Inter Bold"] text-center font-medium pb-2'>{about}</h1>
             </div>
           ) : (
             <div>
@@ -829,8 +832,8 @@ const handleSaveBlog = async () => {
       {blogs.map(blog => (
           <div key={blog.uid} className="absolute top-[52rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
             <img src={blog.imageURL} alt="Blog image" className="aspect-square w-[20rem] h-[20rem] mb-4" />
-            <input type="text" placeholder="Blog Title" className="w-[20rem] max-w-xs" value={blog.title} onChange={(e) => setBlogTitle(e.target.value)} />
-            <textarea className="textarea w-[20rem] h-[10rem]  textarea-bordered my-2" placeholder="About" value={blog.about} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
+            <input type="text" placeholder="Blog Title" className="w-[20rem] max-w-xs font-medium" value={blog.title} onChange={(e) => setBlogTitle(e.target.value)} />
+            <textarea className="textarea w-[20rem] h-[10rem] font-medium my-2" placeholder="About" value={blog.about} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
             <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
           </div>
       ))}
