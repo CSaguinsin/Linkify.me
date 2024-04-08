@@ -812,26 +812,25 @@ const handleSaveBlog = async () => {
           </p>
         </label>
 
-        <div className="absolute top-[83rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
+        <div className="absolute  max-w-96 left-1/2 transform -translate-x-1/2  z-20">
           <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" value={blogTitle} onChange={(e) => setBlogTitle(e.target.value)} />
         </div>
-        <div className="absolute top-[87rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
+        <div className="absolute top-[18rem]  max-w-96 left-1/2 transform -translate-x-1/2  z-20">
           <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered" placeholder="About" value={blogAbout} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
         </div>
-        <div className="absolute top-[98rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
+        <div className="absolute top-[29rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
           <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
         </div>
       </>
     )}
     </div>
 
-      <h1 className='absolute top-[102rem] max-w-96 left-1/2 transform -translate-x-1/2 z-20 font-["Inter Bold"] font-bold pb-2'>Blogs</h1>
-      <div className="columns-3 gap-8 top-[106rem] absolute left-1/2 max-w-[90%] transform -translate-x-1/2 mx-auto z-20">
+      <div className="absolute  max-w-96 left-1/2 transform -translate-x-1/2  z-20">
       {blogs.map(blog => (
-          <div key={blog.uid} className="max-w-96">
-            <img src={blog.imageURL} alt="Blog image" className="aspect-square object-cover w-[20rem] h-[10rem] mb-4" />
-            <input type="text" placeholder="Blog Title" className="w-[20rem] input input-bordered max-w-xs" value={blog.title} onChange={(e) => setBlogTitle(e.target.value)} />
-            <textarea className="textarea w-[20rem] h-[10rem] textarea-bordered my-2" placeholder="About" value={blog.about} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
+          <div key={blog.uid} className="absolute top-[52rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
+            <img src={blog.imageURL} alt="Blog image" className="aspect-square w-[20rem] h-[20rem] mb-4" />
+            <input type="text" placeholder="Blog Title" className="w-[20rem] max-w-xs" value={blog.title} onChange={(e) => setBlogTitle(e.target.value)} />
+            <textarea className="textarea w-[20rem] h-[10rem]  textarea-bordered my-2" placeholder="About" value={blog.about} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
             <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
           </div>
       ))}
