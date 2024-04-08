@@ -533,6 +533,9 @@ const handleSaveBlog = async () => {
 
   return (
     <>
+    <section class='py-2 bg-[#E7A500] text-white text-center'>
+        <p class='text-sm font-medium'>Thanks for using Linkify! This is just the MVP version. Please send feedback to improve your experience.</p>    
+    </section>
     <div className="navbar bg-base-100">
   <div className="navbar-start">
     <div className="dropdown">
@@ -556,7 +559,7 @@ const handleSaveBlog = async () => {
         <div className="relative">
           <div className="grid grid-cols-3 min-h-[16rem] py-6 px-16 font-[sans-serif] overflow-hidden" style={{ backgroundImage: `url(${Example})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
           <div className="absolute top-[8rem] left-1/2 transform -translate-x-1/2 avatar z-20">
-              <div className="w-[16rem] rounded-full">
+              <div className="w-[16rem] rounded-full shadow-lg img-fluid">
                   <img src={avatarURL || AvatarImage} alt="Avatar" />
               </div>
           </div>
@@ -578,7 +581,7 @@ const handleSaveBlog = async () => {
 
 <section>
         {/* Name section */}
-        <div className="absolute top-[32rem] pb-10 left-1/2 transform -translate-x-1/2 avatar z-20">
+        <div className="absolute top-[33rem] pb-10 left-1/2 transform -translate-x-1/2 avatar z-20">
           {nameSaved ? (
             <h1 className='font-["Inter Bold"] font-bold text-[3rem] pb-2'>{name}</h1>
           ) : (
@@ -628,60 +631,53 @@ const handleSaveBlog = async () => {
 
         <section>
       <div className="absolute top-[50rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
-          <h1 className='font-["Inter Bold"] font-bold pb-2'>Social Media</h1>
-          <div className="flex flex-row space-x-5">
-              <img
-                width={50}
-                height={50}
-                src="https://img.icons8.com/ios-filled/50/twitterx--v1.png"
-                alt="twitterx--v1"
-              />
-              {twitterUsernameAdded ? (
-                <input
-                  type="text"
-                  placeholder="@username"
-                  className="w-[20rem] max-w-xs font-mono"
-                  value={twitterUsername}
-                  readOnly
-                />
-              ) : (
-                twitterUsernameInputVisible && (
-                  <input
-                    type="text"
-                    placeholder="@username"
-                    className="w-[20rem] input input-bordered max-w-xs"
-                    value={twitterUsername}
-                    onChange={(e) => setTwitterUsername(e.target.value)}
-                  />
-                )
-              )}
-              {addTwitterButtonVisible && (
-                <button
-                  className="btn btn-warning font-bold rounded-lg text-white"
-                  onClick={handleAddTwitterUsername}
-                >
-                  + Add
-                </button>
-              )}
-            </div>
-
-{/* Facebook section */}
-
+          <h1 className='font-["Inter Bold"] font-bold pb-2'>Where to find me</h1>
+          {/* Twitter section */}
 <div className="flex flex-row space-x-5 pt-5">
   <img
+    width={50}
+    height={50}
+    src="https://img.icons8.com/ios-filled/50/twitterx--v1.png"
+    alt="twitterx--v1"
+  />
+  {twitterUsernameAdded ? (
+    <Link to={`https://twitter.com/${twitterUsername}`} target="_blank" rel="noopener noreferrer" className="w-[20rem] max-w-xs font-mono">
+      {twitterUsername}
+    </Link>
+  ) : (
+    twitterUsernameInputVisible && (
+      <input
+        type="text"
+        placeholder="@username"
+        className="w-[20rem] input input-bordered max-w-xs"
+        value={twitterUsername}
+        onChange={(e) => setTwitterUsername(e.target.value)}
+      />
+    )
+  )}
+  {addTwitterButtonVisible && (
+    <button
+      className="btn btn-warning font-bold rounded-lg text-white"
+      onClick={handleAddTwitterUsername}
+    >
+      + Add
+    </button>
+  )}
+</div>
+
+
+{/* Facebook section */}
+<div className="flex flex-row space-x-5 pt-5">
+<img
     width={50}
     height={50}
     src="https://img.icons8.com/color/48/facebook.png"
     alt="facebook"
   />
   {facebookUsernameAdded ? (
-    <input
-      type="text"
-      placeholder="@username"
-      className="w-[20rem] max-w-xs font-mono"
-      value={facebookUsername} // This value might be causing the warning
-      readOnly
-    />
+    <Link to={`https://www.facebook.com/${facebookUsername}`} target="_blank" rel="noopener noreferrer" className="w-[20rem] max-w-xs font-mono">
+      {facebookUsername}
+    </Link>
   ) : (
     facebookUsernameInputVisible && (
       <input
@@ -703,7 +699,6 @@ const handleSaveBlog = async () => {
   )}
 </div>
 
-      {/* Instagram section */}
 {/* Instagram section */}
 <div className="flex flex-row space-x-5 pt-5">
   <img
@@ -713,13 +708,9 @@ const handleSaveBlog = async () => {
     alt="instagram-new"
   />
   {instagramUsernameAdded ? (
-    <input
-      type="text"
-      placeholder="@username"
-      className="w-[20rem] max-w-xs font-mono"
-      value={instagramUsername}
-      readOnly
-    />
+    <Link to={`https://www.instagram.com/${instagramUsername}`} target="_blank" rel="noopener noreferrer" className="w-[20rem] max-w-xs font-mono">
+      {instagramUsername}
+    </Link>
   ) : (
     instagramUsernameInputVisible && (
       <input
@@ -748,14 +739,10 @@ const handleSaveBlog = async () => {
           src="https://img.icons8.com/ios-filled/50/tiktok--v1.png"
           alt="tiktok--v1"
         />
-  {tiktokusernameAdded ? ( // Corrected variable name here
-    <input
-      type="text"
-      placeholder="@username"
-      className="w-[20rem] max-w-xs font-mono"
-      value={tiktokUsername}
-      readOnly
-    />
+  {tiktokusernameAdded? (
+    <Link to={`https://www.tiktok.com/${tiktokUsername}`} target="_blank" rel="noopener noreferrer" className="w-[20rem] max-w-xs font-mono">
+      {tiktokUsername}
+    </Link>
   ) : (
     tiktokUsernameInputVisible && (
       <input
@@ -828,17 +815,19 @@ const handleSaveBlog = async () => {
     )}
     </div>
 
-      <div className="absolute  max-w-96 left-1/2 transform -translate-x-1/2  z-20">
-      {blogs.map(blog => (
-          <div key={blog.uid} className="absolute top-[52rem] max-w-96 left-1/2 transform -translate-x-1/2  z-20">
-            <img src={blog.imageURL} alt="Blog image" className="aspect-square w-[20rem] h-[20rem] mb-4" />
-            <input type="text" placeholder="Blog Title" className="w-[20rem] max-w-xs font-medium" value={blog.title} onChange={(e) => setBlogTitle(e.target.value)} />
-            <textarea className="textarea w-[20rem] h-[10rem] font-medium my-2" placeholder="About" value={blog.about} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
-            <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
-          </div>
-      ))}
-        </div>
-  </section>
+    <div className="absolute  left-1/2 transform -translate-x-1/2 z-20">
+  {blogs.map(blog => (
+    <div key={blog.uid} className="absolute top-[52rem] left-1/2 transform -translate-x-1/2 z-20">
+      <img src={blog.imageURL} alt="Blog image" className="w-[40rem] h-[20rem] mb-4" />
+      <input type="text" placeholder="Blog Title" className="w-[40rem] text-[2rem] text-center pb-5 font-sans font-bold" value={blog.title} onChange={(e) => setBlogTitle(e.target.value)} />
+      <textarea className="w-[40rem] text-center font-medium my-2  h-[15rem]" placeholder="About" value={blog.about} onChange={(e) => setBlogAbout(e.target.value)}></textarea>
+      <button className="btn btn-warning font-bold rounded-lg text-white mt-2" onClick={handleSaveBlog}>Save</button>
+    </div>
+  ))}
+</div>
+
+</section>
+ 
     </>
   )
 }

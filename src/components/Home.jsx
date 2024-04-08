@@ -14,6 +14,9 @@ import User5 from '../assets/user5.png'
 const Home = () => {
   return (
         <>
+    <section class='py-2 bg-[#E7A500] text-white text-center px-10'>
+        <p class='text-sm font-medium'>Thanks for using Linkify! This is just the MVP version. Please send feedback to improve your experience.</p>    
+    </section>
         <Navbar />
             <div className="flex justify-center space-x-3 pt-10">   
               <div className="avatar-group -space-x-6 rtl:space-x-reverse">
