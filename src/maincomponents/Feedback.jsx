@@ -2,37 +2,18 @@ import React, { useState } from 'react';
 import { auth } from '../config/firebase'; // Import auth
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc } from 'firebase/firestore'; // Import Firestore functions
+import { setDoc, doc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import Logo from '../assets/logo.png';  
-import { firestore } from '../config/firebase'; // Import firestore
-
-
 
 const Feedback = () => {
     const [name, setName] = useState('');
-    const [feedback, setFeedback] = useState('');
+    const [nameSaved, setNameSaved] = useState(false);
+    const [about, setAbout] = useState('');
     const [loggingOut, setLoggingOut] = useState(false);
     const navigate = useNavigate();
-
-    // Function to handle sending feedback
-    const sendFeedback = async () => {
-        try {
-            const feedbackRef = firestore.collection('feedbacks');
-            await feedbackRef.add({
-                name: name,
-                feedback: feedback
-            });
-            // Reset form fields after successful submission
-            setName('');
-            setFeedback('');
-            // Optionally, you can show a success message to the user
-        } catch (error) {
-            console.error('Error sending feedback:', error);
-            // Handle error as needed, e.g., show an error message to the user
-        }
-    };
 
     // Handle logout
     const handleLogout = () => {
@@ -50,6 +31,49 @@ const Feedback = () => {
                 // Handle error as needed, e.g., show an error message to the user
             });
     };
+
+
+    // Handle name input logic
+    const sendFeedback = async () => {
+      try {
+        // Ensure user is authenticated
+        if (!auth.currentUser) {
+          console.error("User is not authenticated.");
+          return;
+        }
+    
+        // Ensure name is not empty
+        if (name.trim() === '') {
+          console.error("Name cannot be empty.");
+          return;
+        }
+    
+        // Update the existing document in Firestore with the user's UID as the document ID
+        await setDoc(doc(db, "feedbacks", auth.currentUser.uid), {
+          name: name,
+          // Preserve existing about data by retrieving it first and then updating the document
+          about: about
+        });
+    
+        // Set state to indicate name is saved
+        setNameSaved(true);
+    
+        // Show success alert
+        showAlert();
+      } catch (error) {
+        console.error("Error adding name: ", error);
+      }
+    };
+    
+    const showAlert = () => {
+      return (
+        <div role="alert" className="alert alert-success">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Your feedback has been sent to the creator! Thank you!</span>
+        </div>
+      );
+    };
+    
 
 
 
@@ -83,30 +107,39 @@ const Feedback = () => {
 
   <section className='pb-30'>
             <h1 className='text-center  font-bold text-[80px]'>
-                    Thank you so much for using <br />  <span className="text-[#FF914D]">Linkify.me</span>
+                    Thank you so much for using <br /> the minimum viable product of < br/>  <span className="text-[#FF914D]">Linkify.me</span>
             </h1>
             
             <p className='text-center pt-5 pb-5  font-regular'>Your feedback is crucial—it guides and shapes what I do. Your thoughts and opinions are invaluable in refining <br /> and improving my work to better meet your needs. So please, share your feedback with me—it's the compass that guides <br /> us towards excellence.</p>
             <div className="flex justify-center pt-5 space-x-3"> 
             </div>
   <div>
-            <input
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="p-4 bg-white max-w-md mx-auto w-full block text-sm border border-gray-300 outline-[#007bff] rounded"
-            />
-            <br />
-            <textarea
-                placeholder="User Feedback"
-                value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
-                className="p-4 bg-white max-w-md mx-auto w-full block text-sm border border-gray-300 outline-[#007bff] rounded"
-                rows={4}
-            />
-            <div className='flex justify-center items-center pt-3 pb-10'>
-                <button className="btn btn-warning font-bold rounded-lg text-white" onClick={sendFeedback}>Send feedback</button>
+            { !nameSaved && (
+              <>
+                <div>
+                  <input
+                      type="text" 
+                      placeholder="Name" 
+                      value={name} 
+                      onChange={(e) => setName(e.target.value)} 
+                      className="p-4 bg-white max-w-md mx-auto w-full block text-sm border border-gray-300 outline-[#007bff] rounded"
+                  />
+                </div>
+                <br />
+                <textarea
+                    placeholder="User Feedback"
+                    value={about}
+                    onChange={(e) => setAbout(e.target.value)}
+                    className="p-4 bg-white max-w-md mx-auto w-full block text-sm border border-gray-300 outline-[#007bff] rounded"
+                    rows={4}
+                />
+                <div className='flex justify-center items-center pt-3 pb-10'>
+                    <button className="btn btn-warning font-bold rounded-lg text-white" onClick={sendFeedback}>Send feedback</button>
+                </div>
+              </>
+            )}
+            <div className="pb-40">
+            {nameSaved && showAlert()}
             </div>
     </div>
   </section>
@@ -115,4 +148,4 @@ const Feedback = () => {
   )
 }
 
-export default Feedback
+export default Feedback;
