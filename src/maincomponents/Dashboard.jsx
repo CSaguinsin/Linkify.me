@@ -608,14 +608,15 @@ const handleSaveBlog = async () => {
           )}
         </div>
         {/* About section */}
-        <div className="absolute top-[38rem] max-w-96 left-1/2 transform -translate-x-1/2 avatar z-20">
+
+        <div className="absolute top-[38rem] left-1/2 transform -translate-x-1/2 avatar z-20">
           {aboutSaved ? (
             <div>
               <h1 className='font-["Inter Bold"] text-center font-bold pb-2'>About Me</h1>
               <h1 className='font-["Inter Bold"] text-center font-medium pb-2'>{about}</h1>
             </div>
           ) : (
-            <div>
+            <div className='flex flex-row  '>
               <h1 className='font-["Inter Bold"] font-bold pb-2'>About Me</h1>
               <textarea 
                 className="textarea w-[20rem] h-[10rem] textarea-bordered" 
